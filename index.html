@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ask Gemini AI</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f2f2f2; }
+    input, button { padding: 10px; width: 100%; margin-top: 10px; }
+    #response { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Ask Gemini AI</h2>
+  <input id="userInput" placeholder="Type your question..." />
+  <button onclick="askGemini()">Ask</button>
+  <div id="response">Waiting for your question...</div>
+
+  <script>
+    async function askGemini() {
+      const input = document.getElementById("userInput").value;
+      const responseDiv = document.getElementById("response");
+      responseDiv.innerText = "Thinking...";
+
+      const apiKey = "AIzaSyCOd8cAfF7GIztPCPXCJTQWhc8Gvd-YjBc"; // Your API Key
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
+
+      const data = {
+        contents: [{ parts: [{ text: input }] }]
+      };
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result && result.candidates && result.candidates.length > 0) {
+          responseDiv.innerText = result.candidates[0].content.parts[0].text;
+        } else {
+          responseDiv.innerText = "No response from Gemini.";
+        }
+      } catch (e) {
+        responseDiv.innerText = "Error: " + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
